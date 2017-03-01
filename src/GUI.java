@@ -78,7 +78,7 @@ public class GUI extends JFrame {
 	private int memory[][];
 	private String ACVal;
 	private String DRVal;
-	private String PCVal;
+	private int PCVal;
 	private String ARVal;
 	private String MARVal;
 	private String IRVal;
@@ -464,7 +464,7 @@ public class GUI extends JFrame {
 		{
 			public void actionPerformed(ActionEvent arg0) //Handle click
 			{
-				int memoryLocation = Integer.parseInt(textField_initialPC.getText());
+				int memoryLocation = PCVal;
 				StringBuilder sb = processHex(memoryLocation);
 				
 				//Get input from textfields
@@ -478,40 +478,40 @@ public class GUI extends JFrame {
 				//First steps (t0)
 				textField_t0_AC.setText(ACVal);
 				textField_t0_DR.setText(DRVal);
-				textField_t0_PC.setText(PCVal);
+				textField_t0_PC.setText(Integer.toString(PCVal));
 				textField_t0_E.setText(Integer.toString(EVal));
 				
-				ARVal = PCVal; //Assign PC to AR
+				ARVal = Integer.toString(PCVal); //Assign PC to AR
 				textField_t0_AR.setText(ARVal);
 				textField_t0_MAR.setText(sb.toString()); //Set M[AR] to the value of AR
 				
+				// t1
 				//Increment PC by 1
-				int pcVal = Integer.parseInt(textField_initialPC.getText()); pcVal++;
-				textField_t1_PC.setText(Integer.toString(pcVal));
-				textField_afterPC.setText(Integer.toString(pcVal));
-				PCVal = Integer.toString(pcVal);
+				PCVal++;
+				textField_t1_PC.setText(Integer.toString(PCVal));
+				textField_afterPC.setText(Integer.toString(PCVal));
 				//
 				
 				//Set IR to M[AR]
-	//			textField_t1_IR.setText(textField_t0_MAR.getText());
-				textField_t1_IR.setText(Integer.toString(7080)); //HARDCODED FOR TESTING
+				IRVal = MARVal;
+				textField_t1_IR.setText(MARVal);
+				//
 				//
 				
+				//t2
 				//Set AR to the last 3 bits of AR
+				ARVal = sb.substring(1);
 				textField_t2_AR.setText(sb.substring(1));
 				//
-				
-				//set E value
-				EVal = Integer.parseInt(textField_initialE.getText());
 				//
 				
 				//Process instruction
-				if(textField_t1_IR.getText().startsWith("7"))
+				if(IRVal.startsWith("7"))
 				{
-					processRegisterInstruction(Integer.parseInt(textField_t1_IR.getText()));
+					processRegisterInstruction(Integer.parseInt(IRVal));
 				}
 								
-				switch (textField_t1_IR.getText().charAt(0))
+				switch (IRVal.charAt(0))
 				{
 				case '0': processMemoryInstruction(0); break;
 				case '1': processMemoryInstruction(1); break;
@@ -534,6 +534,11 @@ public class GUI extends JFrame {
 				
 				//Update all fields after instructions are executed
 				textField_afterAC.setText(ACVal);
+				textField_afterDR.setText(DRVal);
+				textField_afterPC.setText(Integer.toString(PCVal));
+				textField_afterAR.setText(ARVal);
+				textField_afterMAR.setText(MARVal);
+				textField_afterIR.setText(IRVal);
 				textField_afterE.setText(Integer.toString(EVal));
 				//
 			}
@@ -545,45 +550,55 @@ public class GUI extends JFrame {
 		JButton btnNext = new JButton("Next Instruction");
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int memoryLocation = Integer.parseInt(PCVal);
+				int memoryLocation = PCVal;
 				StringBuilder sb = processHex(memoryLocation);
+				
+				//Get input from the result of the initial instruction
+				ACVal = textField_afterAC.getText();
+				DRVal = textField_afterDR.getText();
+				ARVal = textField_afterAR.getText();
+				MARVal = textField_afterMAR.getText();
+				IRVal = textField_afterIR.getText();
+				EVal = Integer.parseInt(textField_afterE.getText());
 				
 				//First steps (t0)
 				textField_t0_AC.setText(ACVal);
 				textField_t0_DR.setText(DRVal);
-				textField_t0_PC.setText(PCVal);
+				textField_t0_PC.setText(Integer.toString(PCVal));
 				textField_t0_E.setText(Integer.toString(EVal));
 				
-				ARVal = PCVal; //Assign PC to AR
+				ARVal = Integer.toString(PCVal); //Assign PC to AR
 				textField_t0_AR.setText(ARVal);
 				textField_t0_MAR.setText(sb.toString()); //Set M[AR] to the value of AR
+				MARVal = sb.toString();
 				
+				// t1
 				//Increment PC by 1
-				int pcVal = Integer.parseInt(PCVal); pcVal++;
-				textField_t1_PC.setText(Integer.toString(pcVal));
-				textField_afterPC.setText(Integer.toString(pcVal));
-				PCVal = Integer.toString(pcVal);
+				PCVal++;
+				textField_t1_PC.setText(Integer.toString(PCVal));
+				textField_afterPC.setText(Integer.toString(PCVal));
 				//
 				
 				//Set IR to M[AR]
-				textField_t1_IR.setText(textField_t0_MAR.getText());
+				IRVal = MARVal;
+				textField_t1_IR.setText(MARVal);
+				//
 				//
 				
+				//t2
 				//Set AR to the last 3 bits of AR
+				ARVal = sb.substring(1);
 				textField_t2_AR.setText(sb.substring(1));
 				//
-				
-				//set E value
-				EVal = Integer.parseInt(textField_initialE.getText());
 				//
 				
 				//Process instruction
-				if(textField_t1_IR.getText().startsWith("7"))
+				if(IRVal.startsWith("7"))
 				{
-					processRegisterInstruction(Integer.parseInt(textField_t1_IR.getText()));
+					processRegisterInstruction(Integer.parseInt(IRVal));
 				}
 								
-				switch (textField_t1_IR.getText().charAt(0))
+				switch (IRVal.charAt(0))
 				{
 				case '0': processMemoryInstruction(0); break;
 				case '1': processMemoryInstruction(1); break;
@@ -603,10 +618,16 @@ public class GUI extends JFrame {
 				default: break;
 				}
 				//
-
+				
 				//Update all fields after instructions are executed
 				textField_afterAC.setText(ACVal);
+				textField_afterDR.setText(DRVal);
+				textField_afterPC.setText(Integer.toString(PCVal));
+				textField_afterAR.setText(ARVal);
+				textField_afterMAR.setText(MARVal);
+				textField_afterIR.setText(IRVal);
 				textField_afterE.setText(Integer.toString(EVal));
+				//
 			}
 		});
 		btnNext.setBounds(314, 354, 131, 25);
@@ -664,7 +685,7 @@ public class GUI extends JFrame {
 	public void setPCVal(int pc)
 	{
 		textField_initialPC.setText(Integer.toString(pc));
-		PCVal = Integer.toString(pc);
+		PCVal = pc;
 	}
 	
 	public void setARVal(String ar)
@@ -747,6 +768,9 @@ public class GUI extends JFrame {
 		else if (val == 7200)
 		{
 			//Complement AC
+			int num = Integer.parseInt(ACVal, 16);
+			int result = (~num) + 1;
+			ACVal = Integer.toString(result, 16);
 			//
 		}
 		else if (val == 7100)
@@ -823,26 +847,43 @@ public class GUI extends JFrame {
 		else if (val == 7020)
 		{
 			//Increment AC
+			ACVal = binaryAddition(ACVal, "0001");
 			//
 		}
 		else if (val == 7010)
 		{
 			//Skip next instruction if AC positive
+			int c[] = new int[16];
+			c = convert(ACVal); //Store 16bit AC value in this char array
+			
+			if (c[0] == 0)
+				PCVal++;
 			//
 		}
 		else if (val == 7008)
 		{
 			//Skip next instruction if AC negative
+			int c[] = new int[16];
+			c = convert(ACVal); //Store 16bit AC value in this char array
+			
+			if (c[0] == 1)
+				PCVal++;
 			//
 		}
 		else if (val == 7004)
 		{
 			//Skip next instruction if AC is zero
+			if (Integer.parseInt(ACVal, 16) == 0)
+				PCVal++;
 			//
 		}
 		else if (val == 7002)
 		{
 			//Skip next instruction if E is 0
+			if (EVal == 0)
+			{
+				PCVal++;
+			}
 			//
 		}
 		else if (val == 7001)
@@ -909,6 +950,17 @@ public class GUI extends JFrame {
 		}
 
 		return c2;
+	}
+	
+	public String binaryAddition(String num1, String num2)
+	{
+		int number0 = Integer.parseInt(num1, 16);
+		int number1 = Integer.parseInt(num2, 16);
+
+		int sum = number0 + number1;
 		
+		System.out.println(Integer.toBinaryString(sum));
+		
+		return Integer.toHexString(sum);
 	}
 }
