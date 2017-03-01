@@ -58,7 +58,7 @@ public class GUI extends JFrame {
 	private JTextField textField_t4_DR;
 	private JTextField textField_t4_PC;
 	private JTextField textField_t4_AR;
-	private JTextField textField_39;
+	private JTextField textField_t4_MAR;
 	private JTextField textField_40;
 	private JTextField textField_41;
 	private JTextField textField_t5_AC;
@@ -356,11 +356,11 @@ public class GUI extends JFrame {
 		textField_t4_AR.setBounds(359, 249, 71, 22);
 		contentPane.add(textField_t4_AR);
 		
-		textField_39 = new JTextField();
-		textField_39.setEditable(false);
-		textField_39.setColumns(10);
-		textField_39.setBounds(442, 249, 71, 22);
-		contentPane.add(textField_39);
+		textField_t4_MAR = new JTextField();
+		textField_t4_MAR.setEditable(false);
+		textField_t4_MAR.setColumns(10);
+		textField_t4_MAR.setBounds(442, 249, 71, 22);
+		contentPane.add(textField_t4_MAR);
 		
 		textField_40 = new JTextField();
 		textField_40.setEditable(false);
@@ -483,6 +483,7 @@ public class GUI extends JFrame {
 				
 				ARVal = Integer.toString(PCVal); //Assign PC to AR
 				textField_t0_AR.setText(ARVal);
+				MARVal = sb.toString();
 				textField_t0_MAR.setText(sb.toString()); //Set M[AR] to the value of AR
 				
 				// t1
@@ -897,11 +898,26 @@ public class GUI extends JFrame {
 	{
 		switch (val)
 		{
-		case 0: System.out.println("AND"); break;
-		case 1: System.out.println("ADD"); break;
-		case 2: System.out.println("LDA"); break;
-		case 3: System.out.println("STA"); break;
-		case 4: System.out.println("BUN"); break;
+		case 0: //AND Instruction
+			DRVal = MARVal; textField_t4_DR.setText(DRVal); break;
+		case 1: //ADD Instruction
+			DRVal = MARVal; textField_t4_DR.setText(DRVal);
+			ACVal = binaryAddition(ACVal, DRVal);
+			textField_t5_AC.setText(ACVal);
+			break;
+		case 2: //LDA Instruction
+			DRVal = MARVal; textField_t4_DR.setText(DRVal);
+			ACVal = DRVal;
+			textField_t5_AC.setText(ACVal);
+			break;
+		case 3: //STA Instruction
+			MARVal = ACVal;
+			textField_t4_MAR.setText(MARVal);
+			break;
+		case 4: //BUN Operation
+			PCVal = Integer.parseInt(ARVal, 16);
+			textField_t4_PC.setText(Integer.toString(PCVal));
+			break;
 		case 5: System.out.println("BSA"); break;
 		case 6: System.out.println("ISZ"); break;
 		case 8: System.out.println("AND - INDIRECT ADDRESS"); break;
@@ -911,7 +927,7 @@ public class GUI extends JFrame {
 		case 12: System.out.println("BUN - INDIRECT ADDRESS"); break;
 		case 13: System.out.println("BSA - INDIRECT ADDRESS"); break;
 		case 14: System.out.println("ISZ - INDIRECT ADDRESS"); break;
-		case 15: System.out.println("DO NOTHING"); break;
+		default: break;
 		}
 	}
 	
